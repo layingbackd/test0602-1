@@ -1,0 +1,10 @@
+{
+  "name": "forever-tem",
+  "version": "1.0.0",
+  "description": "작품 아카이브",
+  "main": "index.html",
+  "scripts": {
+    "serve": "npx http-server .",
+    "build": "node generateContent.js"
+  }
+} 

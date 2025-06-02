@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forever Sample Archive</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gothic+A1:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@100..900&display=swap');
+    </style>
+  <style>
+        *{
+          transition: 0.2s;
+     font-family: "Gothic A1", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  margin: 0;
+  padding: 0;
+}
+
+    body {
+      font-family: 'Arial', sans-serif;
+      /* max-width: 1200px; */
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+      background-color: rgb(245, 245, 245);
+    }
+    
+    header {
+      margin-bottom: 40px;
+      text-align:start;
+    }
+    
+    #gallery {
+      width: 100%;
+      /* display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px; */
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+    border-top: 1px solid #000000;
+    padding-top: 20px;
+    }
+    
+    article {
+      /* border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: white; */
+      max-width: 180px;
+    }
+  
+    
+    .artwork-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    
+    .thumbnail-container {
+      /* width: 100%;
+      height: 200px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5; */
+      filter: grayscale(100%);
+    }
+    
+    .thumbnail-container img {
+      width: 100%;
+      height: auto;
+      max-height: 200px; /* 최대 높이 제한 */
+      /* width: auto;
+      max-width: 180px; */
+      /* height: 50%; */
+      object-fit: cover;
+    }
+
+    .thumbnail-container:hover {
+      filter: grayscale(0%);
+    }
+    
+    .no-thumbnail {
+      color: #666;
+      font-style: italic;
+    }
+    
+    .content {
+      /* padding: 20px; */
+      text-align: start;
+    }
+    h1 a{
+      font-size: 18px;
+      font-weight: lighter;
+      font-family: 'Times New Roman', Times, sans-serif;
+    }
+    
+    .artwork-title {
+      color: #333;
+      font-size: 18px;
+      font-weight: bolder;
+      font-style: italic;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
+      color: rgb(91, 83, 255);
+      font-family: 'Times New Roman', Times, sans-serif;
+    }
+    
+    .artwork-description {
+      text-indent: 10px;
+      color: #000000;
+      font-size: 12px;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 8;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.8;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #000000;
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- header script -->
+  <header>
+    <h1>
+      <a href="#">Forever Sample Archive</a>
+    </h1>
+    <nav>
+      <ul>
+       
+      </ul>
+    </nav>
+  </header>
+  
+
+  <!--gallery container scropt -->
+  <div id="gallery"></div>
+  
+  <script>
+    // content.json 파일 불러오기
+    fetch('content.json')
+      .then(response => response.json())
+      .then(data => {
+        if (!data || data.length === 0) {
+          document.getElementById('gallery').innerHTML = '<p>등록된 작품이 없습니다.</p>';
+          return;
+        }
+        
+        const gallery = document.getElementById('gallery');
+        
+        data.forEach(item => {
+          // article 요소 생성
+          const article = document.createElement('article');
+          
+          // 링크 요소 생성 (folder/title.html)
+          const link = document.createElement('a');
+          link.href = `artworks/${item.folder}/${item.title}.html`;
+          link.className = 'artwork-link';
+          
+          // 썸네일 컨테이너
+          const thumbnailContainer = document.createElement('div');
+          thumbnailContainer.className = 'thumbnail-container';
+          
+          if (item.thumbnail) {
+            const thumbnail = document.createElement('img');
+            thumbnail.src = `artworks/${item.folder}/${item.thumbnail}`;
+            thumbnail.alt = `${item.title} 썸네일`;
+            thumbnail.loading = 'lazy';
+            thumbnailContainer.appendChild(thumbnail);
+          } else {
+            const noThumbnail = document.createElement('div');
+            noThumbnail.className = 'no-thumbnail';
+            noThumbnail.textContent = ' ';
+            thumbnailContainer.appendChild(noThumbnail);
+          }
+          
+          // 콘텐츠 영역
+          const content = document.createElement('div');
+          content.className = 'content';
+          
+          // 제목
+          const title = document.createElement('h2');
+          title.className = 'artwork-title';
+          title.textContent = item.title;
+          content.appendChild(title);
+          
+          // 설명 (최대 3줄까지만 표시)
+          if (item.text) {
+            const description = document.createElement('p');
+            description.className = 'artwork-description';
+            description.textContent = item.text;
+            content.appendChild(description);
+          }
+          
+          // 링크에 썸네일과 콘텐츠 추가
+          link.appendChild(thumbnailContainer);
+          link.appendChild(content);
+          
+          // article에 링크 추가
+          article.appendChild(link);
+          
+          // gallery에 article 추가
+          gallery.appendChild(article);
+        });
+      })
+      .catch(error => {
+        console.error('오류:', error);
+        document.getElementById('gallery').innerHTML = `<p>콘텐츠를 불러오는데 문제가 발생했습니다.</p>`;
+      });
+  </script>
+</body>
+</html> 
